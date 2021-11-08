@@ -21,9 +21,10 @@ namespace WebAPI_BAQS.Controllers
 
 
         [HttpGet]
-        public async Task<ActionResult<List<Usuario>>> Get()
+        public async Task<ActionResult<List<Rol>>> Get()
         {
-            return await context.Usuarios.ToListAsync();
+            return await context.Roles.ToListAsync();            
+
         }
     }
 }
