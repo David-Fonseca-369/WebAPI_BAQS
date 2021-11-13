@@ -31,6 +31,13 @@ namespace WebAPI_BAQS
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
 
             services.AddControllers();
+
+
+            services.AddCors(options => options.AddDefaultPolicy(buider =>
+            {
+                buider.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
+
+            }));
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI_BAQS", Version = "v1" });
@@ -50,6 +57,8 @@ namespace WebAPI_BAQS
             app.UseHttpsRedirection();
 
             app.UseRouting();
+
+            app.UseCors();
 
             app.UseAuthorization();
 
