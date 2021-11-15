@@ -23,9 +23,21 @@ namespace WebAPI_BAQS.Controllers
 
         //GET: api/usuarios/getUsuarios
         [HttpGet("getUsuarios")]
-        public async Task<ActionResult<List<Usuario>>> GetUsuarios()
+        public async Task<ActionResult<List<UsuarioVistaDTO>>> GetUsuarios()
         {
-            return await context.Usuarios.ToListAsync();
+            var usuarios = await context.Usuarios.Include(x => x.Rol).Include(x => x.Compania).ToListAsync();
+
+            return usuarios.Select(x => new UsuarioVistaDTO
+            {
+                IdUsuario = x.IdUsuario,
+                IdRol = x.IdRol,
+                NombreRol = x.Rol.Nombre,
+                IdCompania = x.IdCompania,
+                NombreCompania = x.Compania.Nombre,
+                Nombre = x.Nombre,
+                Email = x.Email,
+                Estado = x.Estado
+            }).ToList(); 
         }
 
         //POST: api/usuarios/insertar

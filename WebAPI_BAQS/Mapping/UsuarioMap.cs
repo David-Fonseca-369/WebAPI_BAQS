@@ -15,6 +15,10 @@ namespace WebAPI_BAQS.Mapping
         {
             builder.ToTable("usuario")
                 .HasKey(x => x.IdUsuario);
+
+            //Refrencias a las tablas
+            builder.HasOne(x => x.Rol).WithMany().HasForeignKey(x => x.IdRol);
+            builder.HasOne(x => x.Compania).WithMany().HasForeignKey(x => x.IdCompania);
         }
     }
 }
