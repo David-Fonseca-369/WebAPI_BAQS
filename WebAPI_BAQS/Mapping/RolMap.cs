@@ -13,7 +13,7 @@ namespace WebAPI_BAQS.Mapping
         public void Configure(EntityTypeBuilder<Rol> builder)
         {
             builder.ToTable("rol")
-                .HasKey(x => x.Idrol);
+                .HasKey(x => x.IdRol);
         }
     }
 }

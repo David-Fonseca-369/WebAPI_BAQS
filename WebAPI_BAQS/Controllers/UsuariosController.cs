@@ -40,6 +40,34 @@ namespace WebAPI_BAQS.Controllers
             }).ToList(); 
         }
 
+        //GET: api/usuarios/{id}
+        [HttpGet("{id:int}")]
+        public async Task<ActionResult<UsuarioVistaDTO>>Get(int id)
+        {
+            var usuario = await context.Usuarios.Include(x => x.Rol).Include(x => x.Compania).FirstOrDefaultAsync(x => x.IdUsuario == id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+
+            return new UsuarioVistaDTO
+            {
+                IdUsuario = usuario.IdUsuario,
+                IdRol = usuario.IdRol,
+                NombreRol = usuario.Rol.Nombre,
+                IdCompania = usuario.IdCompania,
+                NombreCompania = usuario.Compania.Nombre,
+                Nombre = usuario.Nombre,
+                Email = usuario.Email,
+                Estado = usuario.Estado
+            };
+
+        }
+
+
+
         //POST: api/usuarios/insertar
         [HttpPost("insertar")]
         public async Task<ActionResult> Insertar([FromBody] UsuarioDTO usuarioDTO)
@@ -64,8 +92,8 @@ namespace WebAPI_BAQS.Controllers
         }
 
         //editar usuario
-        [HttpPut("modificar")]
-        public async Task<ActionResult> Modificar([FromBody] UsuarioActualizarDTO usuarioActualizarDTO)
+        [HttpPut("modificar/{id:int}")]
+        public async Task<ActionResult> Modificar(int id, [FromBody] UsuarioActualizarDTO usuarioActualizarDTO)
         {
             if (usuarioActualizarDTO.IdUsuario > 0) //si hay un id
             {
