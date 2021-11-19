@@ -8,8 +8,7 @@ namespace WebAPI_BAQS.DTOs
 {
     public class UsuarioActualizarDTO
     {
-        [Required]
-        public int IdUsuario { get; set; }
+      
         [Required]
         public int IdRol { get; set; }
         [Required]
@@ -19,8 +18,6 @@ namespace WebAPI_BAQS.DTOs
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        [Required]
         public string _Password { get; set; }
-        public bool Estado { get; set; }
     }
 }

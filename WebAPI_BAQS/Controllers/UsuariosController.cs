@@ -37,12 +37,12 @@ namespace WebAPI_BAQS.Controllers
                 Nombre = x.Nombre,
                 Email = x.Email,
                 Estado = x.Estado
-            }).ToList(); 
+            }).ToList();
         }
 
         //GET: api/usuarios/{id}
         [HttpGet("{id:int}")]
-        public async Task<ActionResult<UsuarioVistaDTO>>Get(int id)
+        public async Task<ActionResult<UsuarioVistaDTO>> Get(int id)
         {
             var usuario = await context.Usuarios.Include(x => x.Rol).Include(x => x.Compania).FirstOrDefaultAsync(x => x.IdUsuario == id);
 
@@ -72,12 +72,18 @@ namespace WebAPI_BAQS.Controllers
         [HttpPost("insertar")]
         public async Task<ActionResult> Insertar([FromBody] UsuarioDTO usuarioDTO)
         {
+
+            if (await VerificarEmail(usuarioDTO.Email))
+            {
+                return BadRequest("El email ya existe.");
+            }
+
             Usuario usuario = new Usuario
             {
                 IdRol = usuarioDTO.IdRol,
                 IdCompania = usuarioDTO.IdCompania,
                 Nombre = usuarioDTO.Nombre,
-                Email = usuarioDTO.Email,
+                Email = usuarioDTO.Email.ToLower(),
                 _Password = usuarioDTO._Password,
                 Estado = true //Por default sea true
             };
@@ -95,19 +101,31 @@ namespace WebAPI_BAQS.Controllers
         [HttpPut("modificar/{id:int}")]
         public async Task<ActionResult> Modificar(int id, [FromBody] UsuarioActualizarDTO usuarioActualizarDTO)
         {
-            if (usuarioActualizarDTO.IdUsuario > 0) //si hay un id
+            if (id > 0) //si hay un id
             {
-                var usuario = await context.Usuarios.Where(x => x.IdUsuario == usuarioActualizarDTO.IdUsuario).FirstOrDefaultAsync();
+                var usuario = await context.Usuarios.Where(x => x.IdUsuario == id).FirstOrDefaultAsync();
+
+                if (usuarioActualizarDTO.Email.ToLower() != usuario.Email)
+                {
+                    if (await VerificarEmail(usuarioActualizarDTO.Email))
+                    {
+                        return BadRequest("El email ya existe.");
+                    }
+                }
+
+
 
                 if (usuario != null)
                 {
                     usuario.IdRol = usuarioActualizarDTO.IdRol;
                     usuario.IdCompania = usuarioActualizarDTO.IdCompania;
                     usuario.Nombre = usuarioActualizarDTO.Nombre;
-                    usuario.Email = usuarioActualizarDTO.Email;
-                    usuario._Password = usuarioActualizarDTO._Password;
-                    usuario.Estado = usuarioActualizarDTO.Estado;
+                    usuario.Email = usuarioActualizarDTO.Email.ToLower();
 
+                    if (!string.IsNullOrEmpty(usuarioActualizarDTO._Password))
+                    {
+                        usuario._Password = usuarioActualizarDTO._Password;
+                    }
 
                     await context.SaveChangesAsync();
 
@@ -128,7 +146,7 @@ namespace WebAPI_BAQS.Controllers
         //Desactivar
         //PUT: api/usuarios/desactivar/{id}
         [HttpPut("desactivar/{id:int}")]
-        public async Task<ActionResult> Desactivar([FromRoute]int id)
+        public async Task<ActionResult> Desactivar([FromRoute] int id)
         {
             if (id > 0)
             {
@@ -155,7 +173,7 @@ namespace WebAPI_BAQS.Controllers
         //Activar
         //PUT: api/usuarios/activar/{id}
         [HttpPut("activar/{id:int}")]
-        public async Task<ActionResult> Activar([FromRoute]int id)
+        public async Task<ActionResult> Activar([FromRoute] int id)
         {
             if (id > 0)
             {
@@ -175,6 +193,13 @@ namespace WebAPI_BAQS.Controllers
             }
 
             return BadRequest();
+        }
+
+
+        private async Task<bool> VerificarEmail(string email)
+        {
+            email = email.ToLower();
+            return await context.Usuarios.AnyAsync(x => x.Email == email);
         }
 
     }
