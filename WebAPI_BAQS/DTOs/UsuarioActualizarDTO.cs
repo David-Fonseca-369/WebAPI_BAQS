@@ -18,6 +18,5 @@ namespace WebAPI_BAQS.DTOs
         [Required]
         [EmailAddress]
         public string Email { get; set; }
-        public string _Password { get; set; }
     }
 }

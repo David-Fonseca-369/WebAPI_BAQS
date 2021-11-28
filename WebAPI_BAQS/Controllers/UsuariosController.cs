@@ -1,11 +1,18 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
+using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
+using System.Security.Claims;
+using System.Text;
 using System.Threading.Tasks;
 using WebAPI_BAQS.DTOs;
+using WebAPI_BAQS.DTOs.Login;
 using WebAPI_BAQS.Entities;
+using WebAPI_BAQS.Helpers;
 
 namespace WebAPI_BAQS.Controllers
 {
@@ -14,10 +21,12 @@ namespace WebAPI_BAQS.Controllers
     public class UsuariosController : ControllerBase
     {
         private readonly ApplicationDbContext context;
+        private readonly IConfiguration configuration;
 
-        public UsuariosController(ApplicationDbContext context)
+        public UsuariosController(ApplicationDbContext context, IConfiguration configuration)
         {
             this.context = context;
+            this.configuration = configuration;
         }
 
 
@@ -82,9 +91,8 @@ namespace WebAPI_BAQS.Controllers
             {
                 IdRol = usuarioDTO.IdRol,
                 IdCompania = usuarioDTO.IdCompania,
-                Nombre = usuarioDTO.Nombre,
+                Nombre = usuarioDTO.Nombre.ToLower(),
                 Email = usuarioDTO.Email.ToLower(),
-                _Password = usuarioDTO._Password,
                 Estado = true //Por default sea true
             };
 
@@ -113,19 +121,12 @@ namespace WebAPI_BAQS.Controllers
                     }
                 }
 
-
-
                 if (usuario != null)
                 {
                     usuario.IdRol = usuarioActualizarDTO.IdRol;
                     usuario.IdCompania = usuarioActualizarDTO.IdCompania;
-                    usuario.Nombre = usuarioActualizarDTO.Nombre;
+                    usuario.Nombre = usuarioActualizarDTO.Nombre.ToLower();
                     usuario.Email = usuarioActualizarDTO.Email.ToLower();
-
-                    if (!string.IsNullOrEmpty(usuarioActualizarDTO._Password))
-                    {
-                        usuario._Password = usuarioActualizarDTO._Password;
-                    }
 
                     await context.SaveChangesAsync();
 
@@ -195,11 +196,59 @@ namespace WebAPI_BAQS.Controllers
             return BadRequest();
         }
 
+        //POST : api/usuarios/login
+        [HttpPost("login")]
+        public async Task<ActionResult<RespuestaAutenticacionDTO>> Login([FromBody] LoginDTO loginDTO)
+        {
+
+            var usuario = await context.Usuarios.Include(x => x.Rol).FirstOrDefaultAsync(x => x.Nombre == loginDTO.User.ToLower());
+
+            if (usuario == null)
+            {
+                return NotFound(new { error = "El usuario no existe en la base de datos." });
+            }
+
+            bool response = await AuthenticationWebAPI.AutheticationAD(loginDTO); //Autenticarse con AD
+
+            if (response)//si es correcto
+            {
+                return ConstruirToken(usuario);
+            }
+            else //Credenciales incorrectas
+            {
+                return BadRequest(new { error = "Usuario o contraseña incorrectos." });
+            }
+
+        }
+
 
         private async Task<bool> VerificarEmail(string email)
         {
             email = email.ToLower();
             return await context.Usuarios.AnyAsync(x => x.Email == email);
+        }
+
+        private RespuestaAutenticacionDTO ConstruirToken(Usuario usuario)
+        {
+            var claims = new List<Claim>()
+            {
+                new Claim("idUsuario", usuario.IdUsuario.ToString()),
+                new Claim("rol", usuario.Rol.Nombre),
+                new Claim("nombre", usuario.Nombre),
+                new Claim("email", usuario.Email),
+            };
+
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(configuration["keyjwt"]));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+            var expires = DateTime.Now.AddHours(1);
+
+            var token = new JwtSecurityToken(issuer: null, audience: null, claims: claims, expires: expires, signingCredentials: credentials);
+
+            return new RespuestaAutenticacionDTO
+            {
+                Token = new JwtSecurityTokenHandler().WriteToken(token),
+                Expiracion = expires
+            };
         }
 
     }

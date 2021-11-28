@@ -12,7 +12,6 @@ namespace WebAPI_BAQS.Entities
         public int IdCompania { get; set; }
         public string Nombre { get; set; }
         public string Email { get; set; }
-        public string _Password { get; set; }
         public bool Estado { get; set; }
 
         //Rerences 
