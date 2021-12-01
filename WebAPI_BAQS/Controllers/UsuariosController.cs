@@ -201,11 +201,11 @@ namespace WebAPI_BAQS.Controllers
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Login([FromBody] LoginDTO loginDTO)
         {
 
-            var usuario = await context.Usuarios.Include(x => x.Rol).FirstOrDefaultAsync(x => x.Nombre == loginDTO.User.ToLower());
+            var usuario = await context.Usuarios.Include(x => x.Rol).FirstOrDefaultAsync(x => x.Nombre == loginDTO.User.ToLower() && x.Estado == true);
 
             if (usuario == null)
             {
-                return NotFound(new { error = "El usuario no existe en la base de datos." });
+                return NotFound(new { error = "El usuario no existe en la base de datos o no está activo." });
             }
 
             bool response = await AuthenticationWebAPI.AutheticationAD(loginDTO); //Autenticarse con AD
