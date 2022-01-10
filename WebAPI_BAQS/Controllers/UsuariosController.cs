@@ -205,7 +205,7 @@ namespace WebAPI_BAQS.Controllers
 
             if (usuario == null)
             {
-                return NotFound(new { error = "El usuario no existe en la base de datos o no está activo." });
+                return NotFound("El usuario no existe en la base de datos o no está activo." );
             }
 
             bool response = await AuthenticationWebAPI.AutheticationAD(loginDTO); //Autenticarse con AD
@@ -216,7 +216,7 @@ namespace WebAPI_BAQS.Controllers
             }
             else //Credenciales incorrectas
             {
-                return BadRequest(new { error = "Usuario o contraseña incorrectos." });
+                return BadRequest( "Usuario o contraseña incorrectos." );
             }
 
         }
