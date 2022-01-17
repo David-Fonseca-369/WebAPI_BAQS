@@ -12,6 +12,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using WebAPI_BAQS.Filters;
 
 namespace WebAPI_BAQS
 {
@@ -32,7 +33,12 @@ namespace WebAPI_BAQS
 
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
 
-            services.AddControllers();
+            //services.AddControllers();
+            //Registra el log de errores como filtro global
+            services.AddControllers(options =>
+            {
+                options.Filters.Add(typeof(ExceptionFilter));
+            });
 
 
             services.AddCors(options => options.AddDefaultPolicy(buider =>
