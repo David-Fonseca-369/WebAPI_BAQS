@@ -11,6 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using WebAPI_BAQS.DTOs;
 using WebAPI_BAQS.DTOs.Login;
+using WebAPI_BAQS.DTOs.Usuario;
 using WebAPI_BAQS.Entities;
 using WebAPI_BAQS.Helpers;
 

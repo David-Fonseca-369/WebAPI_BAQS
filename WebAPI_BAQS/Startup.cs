@@ -28,6 +28,8 @@ namespace WebAPI_BAQS
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddAutoMapper(typeof(Startup));
+
             services.AddDbContext<ApplicationDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("defaultConnection")));
 
             services.AddControllers();
@@ -35,9 +37,12 @@ namespace WebAPI_BAQS
 
             services.AddCors(options => options.AddDefaultPolicy(buider =>
             {
-                buider.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
-
+                buider.WithOrigins("*").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()
+                .WithExposedHeaders(new string[] { "cantidadTotalRegistros" });
             }));
+
+
+
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "WebAPI_BAQS", Version = "v1" });

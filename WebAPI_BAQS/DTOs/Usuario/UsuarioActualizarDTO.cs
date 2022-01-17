@@ -4,11 +4,10 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebAPI_BAQS.DTOs
+namespace WebAPI_BAQS.DTOs.Usuario
 {
     public class UsuarioActualizarDTO
     {
-      
         [Required]
         public int IdRol { get; set; }
         [Required]

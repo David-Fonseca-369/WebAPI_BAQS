@@ -22,10 +22,16 @@ namespace WebAPI_BAQS
             modelBuilder.ApplyConfiguration(new RolMap());
             modelBuilder.ApplyConfiguration(new CompaniaMap());
             modelBuilder.ApplyConfiguration(new UsuarioMap());
+            modelBuilder.ApplyConfiguration(new AreaMap());
+            modelBuilder.ApplyConfiguration(new BaqCabeceraMap());
+            modelBuilder.ApplyConfiguration(new BaqDetalleMap());
         }
 
         public DbSet<Rol> Roles { get; set; }
         public DbSet<Compania> Companias { get; set; }
         public DbSet<Usuario> Usuarios { get; set; }
+        public DbSet<Area> Areas { get; set; }
+        public DbSet<BaqCabecera> BaqCabeceras { get; set; }
+        public DbSet<BaqDetalle> BaqDetalles { get; set; }
     }
 }

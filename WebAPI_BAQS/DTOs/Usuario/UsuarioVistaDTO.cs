@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace WebAPI_BAQS.DTOs
+namespace WebAPI_BAQS.DTOs.Usuario
 {
     public class UsuarioVistaDTO
     {
