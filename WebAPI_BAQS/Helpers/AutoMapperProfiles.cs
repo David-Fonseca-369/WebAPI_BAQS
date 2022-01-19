@@ -5,6 +5,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using WebAPI_BAQS.DTOs.Area;
 using WebAPI_BAQS.DTOs.BAQ;
+using WebAPI_BAQS.DTOs.Tarea;
 using WebAPI_BAQS.Entities;
 
 namespace WebAPI_BAQS.Helpers
@@ -17,6 +18,7 @@ namespace WebAPI_BAQS.Helpers
             CreateMap<AreaCreacionDTO, Area>();
 
             CreateMap<BaqCabecera, BAQDTO>();
+            CreateMap<TareaEditarDTO, Tarea>().ReverseMap();
         }
     }
 }

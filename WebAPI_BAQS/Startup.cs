@@ -40,14 +40,11 @@ namespace WebAPI_BAQS
                 options.Filters.Add(typeof(ExceptionFilter));
             });
 
-
             services.AddCors(options => options.AddDefaultPolicy(buider =>
             {
                 buider.WithOrigins("*").AllowAnyMethod().AllowAnyHeader().AllowAnyOrigin()
                 .WithExposedHeaders(new string[] { "cantidadTotalRegistros" });
             }));
-
-
 
             services.AddSwaggerGen(c =>
             {

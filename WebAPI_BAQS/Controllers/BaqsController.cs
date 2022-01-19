@@ -58,6 +58,14 @@ namespace WebAPI_BAQS.Controllers
 
         }
 
+        [HttpGet("obtenerBAQS")]
+        public async Task<ActionResult<List<BAQDTO>>> ObtenerBAQS()
+        {
+            var baqs = await context.BaqCabeceras.ToListAsync();
+
+            return mapper.Map<List<BAQDTO>>(baqs);
+        }
+
 
 
         [HttpPost("crear")]

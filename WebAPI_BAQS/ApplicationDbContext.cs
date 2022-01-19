@@ -25,6 +25,7 @@ namespace WebAPI_BAQS
             modelBuilder.ApplyConfiguration(new AreaMap());
             modelBuilder.ApplyConfiguration(new BaqCabeceraMap());
             modelBuilder.ApplyConfiguration(new BaqDetalleMap());
+            modelBuilder.ApplyConfiguration(new TareaMap());
         }
 
         public DbSet<Rol> Roles { get; set; }
@@ -33,5 +34,6 @@ namespace WebAPI_BAQS
         public DbSet<Area> Areas { get; set; }
         public DbSet<BaqCabecera> BaqCabeceras { get; set; }
         public DbSet<BaqDetalle> BaqDetalles { get; set; }
+        public DbSet<Tarea> Tareas { get; set; }
     }
 }

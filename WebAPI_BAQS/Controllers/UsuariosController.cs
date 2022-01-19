@@ -197,6 +197,29 @@ namespace WebAPI_BAQS.Controllers
             return BadRequest();
         }
 
+
+        //Eliminar 
+        //DELETE : api/usuarios/eliminar/{id}
+        [HttpDelete("eliminar/{id:int}")]
+        public async Task<ActionResult>Eliminar([FromRoute] int id)
+        {
+            var usuario = await context.Usuarios.FirstOrDefaultAsync(x => x.IdUsuario == id);
+
+            if (usuario == null)
+            {
+                return NotFound();
+            }
+
+
+            context.Remove(usuario);
+
+            await context.SaveChangesAsync();
+
+
+            return NoContent();
+
+        }
+
         //POST : api/usuarios/login
         [HttpPost("login")]
         public async Task<ActionResult<RespuestaAutenticacionDTO>> Login([FromBody] LoginDTO loginDTO)

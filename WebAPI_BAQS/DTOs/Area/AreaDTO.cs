@@ -9,6 +9,6 @@ namespace WebAPI_BAQS.DTOs.Area
     {
         public int IdArea { get; set; }
         public string Nombre { get; set; }
-        public string Estado { get; set; }
+        public bool Estado { get; set; }
     }
 }
