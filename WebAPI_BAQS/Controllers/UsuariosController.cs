@@ -30,6 +30,29 @@ namespace WebAPI_BAQS.Controllers
             this.configuration = configuration;
         }
 
+        //GET: api/usuarios/todosPaginacion
+        [HttpGet("todosPaginacion")]
+        public async Task<ActionResult<List<UsuarioVistaDTO>>> TodosPaginacion([FromQuery]PaginacionDTO paginacionDTO)
+        {
+            var queryable = context.Usuarios.Include(x => x.Rol).Include(x => x.Compania).AsQueryable();
+
+            await HttpContext.InsertarParametrosPaginacionEnCabecera(queryable);
+            var usuarios = await queryable.Paginar(paginacionDTO).ToListAsync();
+
+            return usuarios.Select(x => new UsuarioVistaDTO
+            {
+                IdUsuario = x.IdUsuario,
+                IdRol = x.IdRol,
+                NombreRol = x.Rol.Nombre,
+                IdCompania = x.IdCompania,
+                NombreCompania = x.Compania.Nombre,
+                Nombre = x.Nombre,
+                Email = x.Email,
+                Estado = x.Estado
+            }).ToList();
+
+        }
+
 
         //GET: api/usuarios/getUsuarios
         [HttpGet("getUsuarios")]

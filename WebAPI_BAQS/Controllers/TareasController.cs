@@ -407,7 +407,7 @@ namespace WebAPI_BAQS.Controllers
 
         }
 
-        private void SaveBAQ(string nombreBAQ, string url, List<BaqDetalle> baqDetalles)
+        private async System.Threading.Tasks.Task SaveBAQ(string nombreBAQ, string url, List<BaqDetalle> baqDetalles)
         {
             try
             {
@@ -418,7 +418,7 @@ namespace WebAPI_BAQS.Controllers
                 request.RequestFormat = DataFormat.Json;
                 request.AddHeader("Accept", "application/json");
 
-                IRestResponse response = client.Execute(request);
+                IRestResponse response = await client.ExecuteAsync(request);
                 var content = response.Content;
                 int index = content.IndexOf(Environment.NewLine);
                 string newText = content.Substring(index + Environment.NewLine.Length);
@@ -442,9 +442,9 @@ namespace WebAPI_BAQS.Controllers
                         objBulk.ColumnMappings.Add(columna.NombreColumna, columna.NombreColumna);
                     }
 
-                    cn.Open();
-                    objBulk.WriteToServer(dsTopics);
-                    cn.Close();
+                    await cn.OpenAsync();
+                    await objBulk.WriteToServerAsync(dsTopics);
+                    await cn.CloseAsync();
 
                     //UpdateDate.updateJobs(3);
                     //SuccessfulLog.SaveFileJobMaterials("Job materials");
