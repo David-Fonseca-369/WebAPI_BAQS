@@ -47,7 +47,7 @@ namespace WebAPI_BAQS.Controllers
 
             return baqsPaginacion.Select(x => new BAQDTO
             {
-                IdCabecera = x.IdArea,
+                IdCabecera = x.IdCabecera,
                 IdArea = x.IdArea,
                 NombreArea = x.Area.Nombre,
                 Nombre = x.Nombre,
@@ -175,6 +175,90 @@ namespace WebAPI_BAQS.Controllers
                 //Envio correo
                 return false;
             }
+
+        }
+
+        [HttpDelete("eliminar/{id:int}")]
+        public async Task<ActionResult> Eliminar(int id)
+        {
+            //Eliminar tabla de base de datos
+
+            //consultar el nombre de la tabla por medio del id
+            var baqCabecera = await context.BaqCabeceras.FirstOrDefaultAsync(x => x.IdCabecera == id);
+
+            string queryDeleteTable = $"DROP TABLE {baqCabecera.Nombre}";
+
+            //Eliminar tabla en sql server 
+            bool result = await ExecuteQuery(queryDeleteTable);
+
+            if (result)
+            {
+                //fue eliminado 
+                //eliminar la tarea en el programador de tareas -- pendiente.
+                //eliminar registro en baq cabcera con  
+
+                //eliminar tareas dependientes de la cabecera 
+                var itemsTasks = await context.Tareas.Where(x => x.IdCabecera == id).ToListAsync();
+
+                foreach (var item in itemsTasks)
+                {
+                    var getItem = await context.Tareas.FirstOrDefaultAsync(x => x.IdTarea == item.IdTarea);
+                    if (getItem != null)
+                    {
+                        context.Tareas.Remove(getItem);
+                    }
+
+                }
+
+
+                var baqsDetails = await context.BaqDetalles.Where(x => x.IdCabecera == id).ToListAsync();
+
+
+                foreach (var item in baqsDetails)
+                {
+                    var getItem = await context.BaqDetalles.FirstOrDefaultAsync(x => x.IdDetalle == item.IdDetalle);
+                    
+                    
+                    if (getItem != null)
+                    {
+                        context.BaqDetalles.Remove(getItem);
+                    }
+                }
+
+
+
+                context.BaqCabeceras.Remove(baqCabecera);
+                
+
+                await context.SaveChangesAsync();
+
+
+                return Ok();
+
+
+
+
+                //eliminar detalles depenndientes de la cabecera
+
+                //eliminar cabecera
+
+
+
+            }
+
+            return BadRequest("Eliminar BAQ falló");
+
+
+
+            //Eliminar tarea
+
+
+            //Eliminar registro de esa tabla
+
+
+            //Eliminar script -- pendiente 
+
+
 
         }
 
